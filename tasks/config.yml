@@ -8,11 +8,17 @@
     - restart openvpn
 
 - name: Install LDAP config
-  template:
-    src: ldap.conf.j2
-    dest: "{{ openvpn_base_dir }}/auth/ldap.conf"
-    owner: root
-    group: root
+  block:
+    - file:
+        path: "{{ openvpn_base_dir }}/auth"
+        state: directory
+    - template:
+        src: ldap.conf.j2
+        dest: "{{ openvpn_base_dir }}/auth/ldap.conf"
+        owner: root
+        group: root
+      notify:
+        - restart openvpn
   when: openvpn_use_ldap
 
 - name: Copy openvpn logrotate config file
